@@ -1,17 +1,15 @@
-package servicio;
+package control;
 
 import modelo.Dispositivo;
 import java.net.InetAddress;
 
 public class EscanerServicio {
 
-    // Validar formato de IP
     public boolean validarIP(String ip) {
         String patron = "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$";
         return ip.matches(patron);
     }
 
-    // Hacer Ping y obtener hostname
     public Dispositivo escanearIP(String ip, int timeoutMs) {
         try {
             InetAddress address = InetAddress.getByName(ip);

@@ -1,5 +1,7 @@
+package vista;
+
 import modelo.Dispositivo;
-import servicio.EscanerServicio;
+import control.EscanerServicio;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -13,16 +15,15 @@ public class VentanaPrincipal extends JFrame {
     private JProgressBar progressBar;
     private JTable tablaResultados;
     private DefaultTableModel tableModel;
-    private EscanerServicio servicio;
+    private EscanerServicio control;
 
     public VentanaPrincipal() {
-        servicio = new EscanerServicio();
+        control = new EscanerServicio();
         setTitle("Escáner de Red - TP Redes");
         setSize(700, 500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // Panel Superior: Formulario
         JPanel panelForm = new JPanel(new GridLayout(2, 4, 5, 5));
         panelForm.add(new JLabel("IP Inicio:"));
         txtIpInicio = new JTextField("192.168.1.1");
@@ -43,13 +44,11 @@ public class VentanaPrincipal extends JFrame {
 
         add(panelForm, BorderLayout.NORTH);
 
-        // Panel Central: Tabla
         String[] columnas = {"Dirección IP", "Nombre del Equipo", "Estado", "Tiempo (ms)"};
         tableModel = new DefaultTableModel(columnas, 0);
         tablaResultados = new JTable(tableModel);
         add(new JScrollPane(tablaResultados), BorderLayout.CENTER);
 
-        // Panel Inferior: Progreso y Exportar
         JPanel panelInferior = new JPanel(new BorderLayout());
         progressBar = new JProgressBar();
         progressBar.setStringPainted(true);
@@ -59,7 +58,6 @@ public class VentanaPrincipal extends JFrame {
         panelInferior.add(btnGuardar, BorderLayout.EAST);
         add(panelInferior, BorderLayout.SOUTH);
 
-        // Eventos
         btnEscanear.addActionListener(e -> iniciarEscaneo());
         btnLimpiar.addActionListener(e -> limpiar());
         btnGuardar.addActionListener(e -> guardarResultados());
@@ -69,17 +67,15 @@ public class VentanaPrincipal extends JFrame {
         String ipInicio = txtIpInicio.getText();
         String ipFin = txtIpFin.getText();
 
-        if (!servicio.validarIP(ipInicio) || !servicio.validarIP(ipFin)) {
+        if (!control.validarIP(ipInicio) || !control.validarIP(ipFin)) {
             JOptionPane.showMessageDialog(this, "Formato de IP inválido", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         tableModel.setRowCount(0);
-        
-        // Ejecutar en segundo plano para no congelar la ventana
+
         new Thread(() -> {
             int timeout = Integer.parseInt(txtTimeout.getText());
-            // Lógica simple para iterar el último octeto (asumiendo misma subred)
             int inicioOcteto = Integer.parseInt(ipInicio.substring(ipInicio.lastIndexOf('.') + 1));
             int finOcteto = Integer.parseInt(ipFin.substring(ipFin.lastIndexOf('.') + 1));
             String baseIp = ipInicio.substring(0, ipInicio.lastIndexOf('.') + 1);
@@ -89,7 +85,7 @@ public class VentanaPrincipal extends JFrame {
 
             for (int i = inicioOcteto; i <= finOcteto; i++) {
                 String ip = baseIp + i;
-                Dispositivo d = servicio.escanearIP(ip, timeout);
+                Dispositivo d = control.escanearIP(ip, timeout);
 
                 if (d.isConectado()) respondieron++;
 

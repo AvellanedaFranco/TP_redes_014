@@ -13,7 +13,6 @@ public class Dispositivo {
         this.tiempoRespuesta = tiempoRespuesta;
     }
 
-    // Getters y Setters
     public String getIp() { return ip; }
     public String getNombre() { return nombre; }
     public boolean isConectado() { return conectado; }
